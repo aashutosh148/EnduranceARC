@@ -9,18 +9,17 @@ export default function App() {
   const [pin, setPin] = useState('');
   const [authPassed, setAuthPassed] = useState(false);
 
-    const checkPin = async () => {
+  const checkPin = async () => {
     try {
-        const res = await axios.post('https://your-backend.onrender.com/verify-pin', { pin });
-
-        if (res.data.success) {
+      const res = await axios.post('https://endurancearc-backend.onrender.com/verify-pin', { pin });
+      if (res.data.success) {
         setAuthPassed(true);
-        }
+      }
     } catch (err) {
-        const msg = err.response?.data?.error || "Unknown error";
-        alert(msg);
+      const msg = err.response?.data?.error || "Unknown error";
+      alert(msg);
     }
-    };
+  };
 
   const handleUpload = async () => {
     if (!file) return alert("Please select a file");
@@ -31,7 +30,7 @@ export default function App() {
       formData.append('file', file);
       formData.append('title', title);
 
-      const res = await axios.post('http://localhost:4000/upload', formData, {
+      const res = await axios.post('https://endurancearc-backend.onrender.com/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
 
@@ -46,13 +45,15 @@ export default function App() {
   if (!authPassed) {
     return (
       <div style={styles.container}>
-        <h2>🔒 Enter 4-digit PIN</h2>
+        <h2>🔒 Secure Access</h2>
+        <p>Enter your 4-digit PIN to access uploader</p>
         <input
           type="password"
           maxLength={4}
           value={pin}
           onChange={e => setPin(e.target.value)}
           style={styles.input}
+          inputMode="numeric"
         />
         <button onClick={checkPin} style={styles.button}>Unlock</button>
       </div>
@@ -61,17 +62,20 @@ export default function App() {
 
   return (
     <div style={styles.container}>
-      <h2>📤 Upload to Strava</h2>
-      <input type="file" onChange={e => setFile(e.target.files[0])} />
+      <h2>📤 Strava Activity Uploader</h2>
+      <p style={{ fontSize: 14, color: '#666' }}>Upload your GPX, FIT, or TCX file to Strava.</p>
+
+      <input type="file" onChange={e => setFile(e.target.files[0])} style={styles.input} />
       <input
         type="text"
-        placeholder="Activity title"
+        placeholder="Activity title (optional)"
         value={title}
         onChange={e => setTitle(e.target.value)}
         style={styles.input}
       />
+
       <button onClick={handleUpload} style={styles.button} disabled={uploading}>
-        {uploading ? 'Uploading...' : 'Upload'}
+        {uploading ? 'Uploading...' : 'Upload to Strava'}
       </button>
 
       {response && (
@@ -86,29 +90,37 @@ export default function App() {
 const styles = {
   container: {
     padding: 20,
-    maxWidth: 400,
-    margin: 'auto',
-    fontFamily: 'sans-serif'
+    maxWidth: 500,
+    margin: '0 auto',
+    fontFamily: 'sans-serif',
+    textAlign: 'center',
+    boxSizing: 'border-box'
   },
   input: {
     width: '100%',
-    padding: 10,
-    margin: '10px 0',
-    fontSize: 16
+    padding: 12,
+    margin: '12px 0',
+    fontSize: 16,
+    borderRadius: 6,
+    border: '1px solid #ccc',
+    boxSizing: 'border-box'
   },
   button: {
     width: '100%',
-    padding: 10,
+    padding: 12,
     fontSize: 16,
     backgroundColor: '#fc5200',
     color: 'white',
     border: 'none',
+    borderRadius: 6,
     cursor: 'pointer'
   },
   response: {
     marginTop: 20,
-    padding: 10,
-    backgroundColor: '#eee',
-    whiteSpace: 'pre-wrap'
+    padding: 12,
+    backgroundColor: '#f2f2f2',
+    textAlign: 'left',
+    wordBreak: 'break-word',
+    borderRadius: 6
   }
 };
