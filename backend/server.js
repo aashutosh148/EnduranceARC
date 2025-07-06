@@ -151,6 +151,26 @@ app.post('/upload', upload.fields([
   }
 });
 
+app.post('/refresh', async (req, res) => {
+  try {
+    console.log("⏰ Cron triggered: Refreshing Strava token...");
+
+    const tokenRes = await axios.post('https://www.strava.com/oauth/token', {
+      client_id: CLIENT_ID,
+      client_secret: CLIENT_SECRET,
+      grant_type: 'refresh_token',
+      refresh_token: REFRESH_TOKEN,
+    });
+
+    console.log("✅ Refreshed access token:", tokenRes.data.access_token);
+
+    res.json({ success: true, newAccessToken: tokenRes.data.access_token });
+  } catch (err) {
+    console.error("⚠️ Refresh failed:", err.response?.data || err.message);
+    res.status(500).json({ error: err.response?.data || err.message });
+  }
+});
+
 
 // Catch-all for uncaught exceptions to prevent crash
 process.on('uncaughtException', err => {
